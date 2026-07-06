@@ -17,8 +17,11 @@ CREATE TABLE IF NOT EXISTS documents (
     kode_unik VARCHAR(20) UNIQUE NOT NULL,
     nama_dokumen VARCHAR(255) NOT NULL,
     jenis_dokumen VARCHAR(100) NOT NULL,
-    brand_penerbit ENUM('GOLDGRAM','MEEZAN GOLD','SILVERGRAM','Katalisis','Umum') DEFAULT 'Umum',
+    brand_penerbit ENUM('GOLDGRAM','MEEZAN GOLD','SILVERGRAM','Katalisis','Umum','Personal') DEFAULT 'Umum',
     nama_penerima VARCHAR(255) NOT NULL,
+    nomor_surat VARCHAR(100) NULL,
+    nama_penandatangan VARCHAR(150) NOT NULL,
+    jabatan_penandatangan VARCHAR(150) NOT NULL,
     catatan TEXT NULL,
     tanggal_terbit DATE NOT NULL,
     hash_dokumen VARCHAR(64) NOT NULL,
@@ -34,8 +37,21 @@ CREATE TABLE IF NOT EXISTS documents (
     INDEX idx_kode (kode_unik),
     INDEX idx_status (status),
     INDEX idx_brand (brand_penerbit),
-    INDEX idx_dibuat_pada (dibuat_pada)
+    INDEX idx_dibuat_pada (dibuat_pada),
+    INDEX idx_nomor_surat (nomor_surat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS settings (
+    id TINYINT UNSIGNED PRIMARY KEY DEFAULT 1,
+    nama_perusahaan VARCHAR(150) NOT NULL DEFAULT 'Otentik ID',
+    tagline VARCHAR(200) NOT NULL DEFAULT 'Validasi Keabsahan Dokumen',
+    warna_aksen VARCHAR(7) NOT NULL DEFAULT '#1e3a5f',
+    logo_path VARCHAR(255) NULL,
+    teks_footer VARCHAR(255) NOT NULL DEFAULT 'Sistem validasi tanda tangan dan keabsahan dokumen.',
+    diperbarui_pada DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO settings (id) VALUES (1) ON DUPLICATE KEY UPDATE id = id;
 
 CREATE TABLE IF NOT EXISTS verification_logs (
     id INT AUTO_INCREMENT PRIMARY KEY,

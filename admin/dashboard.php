@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 
-$brandList = ['GOLDGRAM', 'MEEZAN GOLD', 'SILVERGRAM', 'Katalisis', 'Umum'];
+$brandList = ['GOLDGRAM', 'MEEZAN GOLD', 'SILVERGRAM', 'Katalisis', 'Umum', 'Personal'];
 
 $filterStatus = trim((string) ($_GET['status'] ?? ''));
 $filterBrand = trim((string) ($_GET['brand'] ?? ''));
@@ -23,7 +23,7 @@ if (in_array($filterBrand, $brandList, true)) {
 }
 
 if ($pencarian !== '') {
-    $kondisi[] = '(kode_unik LIKE :cari OR nama_penerima LIKE :cari)';
+    $kondisi[] = '(kode_unik LIKE :cari OR nama_penerima LIKE :cari OR nomor_surat LIKE :cari)';
     $parameter['cari'] = '%' . $pencarian . '%';
 }
 
@@ -73,8 +73,8 @@ require __DIR__ . '/../includes/header.php';
 <div class="card">
     <form method="get" class="filter-bar">
         <div class="form-group">
-            <label for="q">Cari kode / penerima</label>
-            <input type="text" id="q" name="q" value="<?php echo e($pencarian); ?>" placeholder="EPI-2026-XXXXXX atau nama">
+            <label for="q">Cari kode / penerima / nomor surat</label>
+            <input type="text" id="q" name="q" value="<?php echo e($pencarian); ?>" placeholder="EPI-2026-XXXXXX, nama, atau nomor surat">
         </div>
         <div class="form-group">
             <label for="status">Status</label>

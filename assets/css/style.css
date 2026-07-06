@@ -69,6 +69,12 @@ a {
     text-decoration: none;
 }
 
+.brand-logo {
+    max-height: 40px;
+    max-width: 160px;
+    object-fit: contain;
+}
+
 .brand-mark {
     display: inline-flex;
     align-items: center;
@@ -419,6 +425,14 @@ textarea {
     letter-spacing: 1px;
     color: var(--color-primary);
     margin-bottom: 8px;
+}
+
+.stamp-logo-img {
+    max-height: 56px;
+    max-width: 260px;
+    object-fit: contain;
+    margin: 0 auto 10px;
+    display: block;
 }
 
 .stamp-kode {

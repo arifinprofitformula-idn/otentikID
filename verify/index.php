@@ -79,8 +79,14 @@ require __DIR__ . '/../includes/header.php';
                 <dd><?php echo e($dokumen['brand_penerbit']); ?></dd>
                 <dt>Nama Penerima</dt>
                 <dd><?php echo e($dokumen['nama_penerima']); ?></dd>
+                <?php if (!empty($dokumen['nomor_surat'])) : ?>
+                <dt>Nomor Surat</dt>
+                <dd><?php echo e($dokumen['nomor_surat']); ?></dd>
+                <?php endif; ?>
                 <dt>Tanggal Terbit</dt>
                 <dd><?php echo formatTanggalIndonesia($dokumen['tanggal_terbit']); ?></dd>
+                <dt>Ditandatangani Oleh</dt>
+                <dd><?php echo e($dokumen['nama_penandatangan']); ?><br><span class="text-muted"><?php echo e($dokumen['jabatan_penandatangan']); ?></span></dd>
             </dl>
         </div>
     <?php elseif ($hasilCek === 'revoked') : ?>

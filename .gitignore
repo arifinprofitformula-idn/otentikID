@@ -1,5 +1,6 @@
 config.php
 /uploads/stempel/*
+/uploads/branding/*
 !.gitkeep
 *.log
 .DS_Store

@@ -79,6 +79,15 @@ require __DIR__ . '/../includes/header.php';
         <dt>Nama Penerima</dt>
         <dd><?php echo e($dokumen['nama_penerima']); ?></dd>
 
+        <dt>Nomor Surat</dt>
+        <dd><?php echo $dokumen['nomor_surat'] !== null && $dokumen['nomor_surat'] !== '' ? e($dokumen['nomor_surat']) : '-'; ?></dd>
+
+        <dt>Nama Penandatangan</dt>
+        <dd><?php echo e($dokumen['nama_penandatangan']); ?></dd>
+
+        <dt>Jabatan Penandatangan</dt>
+        <dd><?php echo e($dokumen['jabatan_penandatangan']); ?></dd>
+
         <dt>Tanggal Terbit</dt>
         <dd><?php echo formatTanggalIndonesia($dokumen['tanggal_terbit']); ?></dd>
 

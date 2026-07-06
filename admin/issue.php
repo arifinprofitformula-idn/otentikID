@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 
-$brandList = ['GOLDGRAM', 'MEEZAN GOLD', 'SILVERGRAM', 'Katalisis', 'Umum'];
+$brandList = ['GOLDGRAM', 'MEEZAN GOLD', 'SILVERGRAM', 'Katalisis', 'Umum', 'Personal'];
 
 $errors = [];
 $form = [
@@ -11,6 +11,9 @@ $form = [
     'jenis_dokumen' => '',
     'brand_penerbit' => 'Umum',
     'nama_penerima' => '',
+    'nomor_surat' => '',
+    'nama_penandatangan' => '',
+    'jabatan_penandatangan' => '',
     'tanggal_terbit' => date('Y-m-d'),
     'catatan' => '',
 ];
@@ -20,6 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form['jenis_dokumen'] = trim((string) ($_POST['jenis_dokumen'] ?? ''));
     $form['brand_penerbit'] = trim((string) ($_POST['brand_penerbit'] ?? ''));
     $form['nama_penerima'] = trim((string) ($_POST['nama_penerima'] ?? ''));
+    $form['nomor_surat'] = trim((string) ($_POST['nomor_surat'] ?? ''));
+    $form['nama_penandatangan'] = trim((string) ($_POST['nama_penandatangan'] ?? ''));
+    $form['jabatan_penandatangan'] = trim((string) ($_POST['jabatan_penandatangan'] ?? ''));
     $form['tanggal_terbit'] = trim((string) ($_POST['tanggal_terbit'] ?? ''));
     $form['catatan'] = trim((string) ($_POST['catatan'] ?? ''));
 
@@ -35,6 +41,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($form['nama_penerima'] === '') {
         $errors[] = 'Nama penerima wajib diisi.';
     }
+    if ($form['nama_penandatangan'] === '') {
+        $errors[] = 'Nama penandatangan wajib diisi.';
+    }
+    if ($form['jabatan_penandatangan'] === '') {
+        $errors[] = 'Jabatan penandatangan wajib diisi.';
+    }
     if ($form['tanggal_terbit'] === '' || strtotime($form['tanggal_terbit']) === false) {
         $errors[] = 'Tanggal terbit tidak valid.';
     }
@@ -47,14 +59,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'jenis_dokumen' => $form['jenis_dokumen'],
             'brand_penerbit' => $form['brand_penerbit'],
             'nama_penerima' => $form['nama_penerima'],
+            'nomor_surat' => $form['nomor_surat'],
+            'nama_penandatangan' => $form['nama_penandatangan'],
+            'jabatan_penandatangan' => $form['jabatan_penandatangan'],
             'tanggal_terbit' => $form['tanggal_terbit'],
         ], SALT_RAHASIA);
 
         $stmt = $pdo->prepare(
             'INSERT INTO documents
-                (kode_unik, nama_dokumen, jenis_dokumen, brand_penerbit, nama_penerima, catatan, tanggal_terbit, hash_dokumen, diterbitkan_oleh)
+                (kode_unik, nama_dokumen, jenis_dokumen, brand_penerbit, nama_penerima, nomor_surat, nama_penandatangan, jabatan_penandatangan, catatan, tanggal_terbit, hash_dokumen, diterbitkan_oleh)
              VALUES
-                (:kode_unik, :nama_dokumen, :jenis_dokumen, :brand_penerbit, :nama_penerima, :catatan, :tanggal_terbit, :hash_dokumen, :diterbitkan_oleh)'
+                (:kode_unik, :nama_dokumen, :jenis_dokumen, :brand_penerbit, :nama_penerima, :nomor_surat, :nama_penandatangan, :jabatan_penandatangan, :catatan, :tanggal_terbit, :hash_dokumen, :diterbitkan_oleh)'
         );
         $stmt->execute([
             'kode_unik' => $kodeUnik,
@@ -62,6 +77,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'jenis_dokumen' => $form['jenis_dokumen'],
             'brand_penerbit' => $form['brand_penerbit'],
             'nama_penerima' => $form['nama_penerima'],
+            'nomor_surat' => $form['nomor_surat'] !== '' ? $form['nomor_surat'] : null,
+            'nama_penandatangan' => $form['nama_penandatangan'],
+            'jabatan_penandatangan' => $form['jabatan_penandatangan'],
             'catatan' => $form['catatan'] !== '' ? $form['catatan'] : null,
             'tanggal_terbit' => $form['tanggal_terbit'],
             'hash_dokumen' => $hashDokumen,
@@ -113,6 +131,18 @@ require __DIR__ . '/../includes/header.php';
         <div class="form-group">
             <label for="nama_penerima">Nama Penerima</label>
             <input type="text" id="nama_penerima" name="nama_penerima" value="<?php echo e($form['nama_penerima']); ?>" required>
+        </div>
+        <div class="form-group">
+            <label for="nomor_surat">Nomor Surat (opsional)</label>
+            <input type="text" id="nomor_surat" name="nomor_surat" value="<?php echo e($form['nomor_surat']); ?>" placeholder="Contoh: 012/EPI/VII/2026">
+        </div>
+        <div class="form-group">
+            <label for="nama_penandatangan">Nama Penandatangan</label>
+            <input type="text" id="nama_penandatangan" name="nama_penandatangan" value="<?php echo e($form['nama_penandatangan']); ?>" placeholder="Nama jelas yang menandatangani dokumen" required>
+        </div>
+        <div class="form-group">
+            <label for="jabatan_penandatangan">Jabatan Penandatangan</label>
+            <input type="text" id="jabatan_penandatangan" name="jabatan_penandatangan" value="<?php echo e($form['jabatan_penandatangan']); ?>" placeholder="Contoh: Direktur Utama, Coach, Pribadi" required>
         </div>
         <div class="form-group">
             <label for="tanggal_terbit">Tanggal Terbit</label>

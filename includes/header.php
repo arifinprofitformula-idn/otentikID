@@ -1,24 +1,36 @@
 <?php
-$pageTitle = isset($pageTitle) ? $pageTitle : 'Otentik ID';
+$pageTitle = isset($pageTitle) ? $pageTitle : 'Beranda';
 $bodyClass = isset($bodyClass) ? $bodyClass : '';
 $basePath = isset($basePath) ? $basePath : '';
+$settings = getSettings($pdo);
+$warnaAksenGelap = warnaLebihGelap($settings['warna_aksen']);
 ?>
 <!doctype html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo e($pageTitle); ?> - Otentik ID</title>
+    <title><?php echo e($pageTitle); ?> - <?php echo e($settings['nama_perusahaan']); ?></title>
     <link rel="stylesheet" href="<?php echo e($basePath); ?>assets/css/style.css">
+    <style>
+        :root {
+            --color-primary: <?php echo e($settings['warna_aksen']); ?>;
+            --color-primary-dark: <?php echo e($warnaAksenGelap); ?>;
+        }
+    </style>
 </head>
 <body class="<?php echo e($bodyClass); ?>">
     <header class="site-header">
         <div class="container header-inner">
             <a class="brand" href="<?php echo e($basePath); ?>verify/">
-                <span class="brand-mark">ID</span>
+                <?php if (!empty($settings['logo_path'])) : ?>
+                    <img class="brand-logo" src="<?php echo e($basePath . $settings['logo_path']); ?>" alt="<?php echo e($settings['nama_perusahaan']); ?>">
+                <?php else : ?>
+                    <span class="brand-mark"><?php echo e(mb_strtoupper(mb_substr($settings['nama_perusahaan'], 0, 2))); ?></span>
+                <?php endif; ?>
                 <span>
-                    <strong>Otentik ID</strong>
-                    <small>Validasi Keabsahan Dokumen</small>
+                    <strong><?php echo e($settings['nama_perusahaan']); ?></strong>
+                    <small><?php echo e($settings['tagline']); ?></small>
                 </span>
             </a>
 
@@ -26,6 +38,7 @@ $basePath = isset($basePath) ? $basePath : '';
                 <nav class="main-nav" aria-label="Navigasi admin">
                     <a href="<?php echo e($basePath); ?>admin/dashboard.php">Dashboard</a>
                     <a href="<?php echo e($basePath); ?>admin/issue.php">Terbitkan</a>
+                    <a href="<?php echo e($basePath); ?>admin/settings.php">Pengaturan</a>
                     <a href="<?php echo e($basePath); ?>admin/logout.php">Keluar</a>
                 </nav>
             <?php endif; ?>

@@ -87,6 +87,41 @@ function formatTanggalWaktuIndonesia(?string $tanggalWaktu): string
     return date('d/m/Y H:i', $timestamp);
 }
 
+function getSettings(PDO $pdo): array
+{
+    $default = [
+        'nama_perusahaan' => 'Otentik ID',
+        'tagline' => 'Validasi Keabsahan Dokumen',
+        'warna_aksen' => '#1e3a5f',
+        'logo_path' => null,
+        'teks_footer' => 'Sistem validasi tanda tangan dan keabsahan dokumen.',
+    ];
+
+    $baris = $pdo->query('SELECT * FROM settings WHERE id = 1')->fetch();
+
+    return $baris ? array_merge($default, $baris) : $default;
+}
+
+function warnaLebihGelap(string $hex, float $persen = 0.15): string
+{
+    $hex = ltrim($hex, '#');
+    if (strlen($hex) !== 6 || !ctype_xdigit($hex)) {
+        $hex = '1e3a5f';
+    }
+
+    [$r, $g, $b] = [
+        (int) hexdec(substr($hex, 0, 2)),
+        (int) hexdec(substr($hex, 2, 2)),
+        (int) hexdec(substr($hex, 4, 2)),
+    ];
+
+    $r = (int) max(0, $r * (1 - $persen));
+    $g = (int) max(0, $g * (1 - $persen));
+    $b = (int) max(0, $b * (1 - $persen));
+
+    return sprintf('#%02x%02x%02x', $r, $g, $b);
+}
+
 function samarkanIp(?string $ip): string
 {
     if ($ip === null || $ip === '') {
