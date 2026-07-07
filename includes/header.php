@@ -16,6 +16,15 @@ $warnaAksenGelap = warnaLebihGelap($settings['warna_aksen']);
         :root {
             --color-primary: <?php echo e($settings['warna_aksen']); ?>;
             --color-primary-dark: <?php echo e($warnaAksenGelap); ?>;
+            --color-bg: <?php echo e(isValidHexColor($settings['warna_background']) ? $settings['warna_background'] : '#f4f6f8'); ?>;
+        }
+
+        .site-header {
+            background: <?php echo e(isValidHexColor($settings['warna_sidebar']) ? $settings['warna_sidebar'] : $settings['warna_aksen']); ?>;
+        }
+
+        .brand-mark {
+            color: <?php echo e(isValidHexColor($settings['warna_tombol']) ? $settings['warna_tombol'] : $settings['warna_aksen']); ?>;
         }
     </style>
 </head>

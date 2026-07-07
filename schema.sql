@@ -17,7 +17,8 @@ CREATE TABLE IF NOT EXISTS documents (
     kode_unik VARCHAR(20) UNIQUE NOT NULL,
     nama_dokumen VARCHAR(255) NOT NULL,
     jenis_dokumen VARCHAR(100) NOT NULL,
-    brand_penerbit ENUM('GOLDGRAM','MEEZAN GOLD','SILVERGRAM','Katalisis','Umum','Personal') DEFAULT 'Umum',
+    brand_penerbit VARCHAR(100) NOT NULL DEFAULT 'Umum',
+    brand_id INT NULL,
     nama_penerima VARCHAR(255) NOT NULL,
     nomor_surat VARCHAR(100) NULL,
     nama_penandatangan VARCHAR(150) NOT NULL,
@@ -37,9 +38,30 @@ CREATE TABLE IF NOT EXISTS documents (
     INDEX idx_kode (kode_unik),
     INDEX idx_status (status),
     INDEX idx_brand (brand_penerbit),
+    INDEX idx_brand_id (brand_id),
     INDEX idx_dibuat_pada (dibuat_pada),
     INDEX idx_nomor_surat (nomor_surat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS brands (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama_brand VARCHAR(100) NOT NULL UNIQUE,
+    slug VARCHAR(120) NOT NULL UNIQUE,
+    aktif TINYINT(1) NOT NULL DEFAULT 1,
+    dibuat_pada DATETIME DEFAULT CURRENT_TIMESTAMP,
+    diperbarui_pada DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_brands_aktif (aktif),
+    INDEX idx_brands_nama (nama_brand)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO brands (nama_brand, slug, aktif) VALUES
+    ('GOLDGRAM', 'goldgram', 1),
+    ('MEEZAN GOLD', 'meezan-gold', 1),
+    ('SILVERGRAM', 'silvergram', 1),
+    ('Katalisis', 'katalisis', 1),
+    ('Umum', 'umum', 1),
+    ('Personal', 'personal', 1)
+ON DUPLICATE KEY UPDATE nama_brand = VALUES(nama_brand);
 
 CREATE TABLE IF NOT EXISTS settings (
     id TINYINT UNSIGNED PRIMARY KEY DEFAULT 1,
@@ -48,6 +70,16 @@ CREATE TABLE IF NOT EXISTS settings (
     warna_aksen VARCHAR(7) NOT NULL DEFAULT '#1e3a5f',
     logo_path VARCHAR(255) NULL,
     teks_footer VARCHAR(255) NOT NULL DEFAULT 'Sistem validasi tanda tangan dan keabsahan dokumen.',
+    tema_preset VARCHAR(30) NOT NULL DEFAULT 'corporate',
+    warna_sidebar VARCHAR(7) NOT NULL DEFAULT '#111827',
+    warna_topbar VARCHAR(7) NOT NULL DEFAULT '#ffffff',
+    warna_background VARCHAR(7) NOT NULL DEFAULT '#f1f5f9',
+    warna_kartu_stat VARCHAR(7) NOT NULL DEFAULT '#1e3a8a',
+    warna_teks_kartu_stat VARCHAR(7) NOT NULL DEFAULT '#d4af37',
+    warna_tombol VARCHAR(7) NOT NULL DEFAULT '#d4af37',
+    warna_tombol_teks VARCHAR(7) NOT NULL DEFAULT '#0f172a',
+    radius_ui VARCHAR(20) NOT NULL DEFAULT 'rounded-xl',
+    bayangan_ui VARCHAR(20) NOT NULL DEFAULT 'shadow-sm',
     diperbarui_pada DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
