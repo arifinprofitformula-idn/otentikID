@@ -127,9 +127,19 @@ function renderAdminLayoutStart(PDO $pdo, string $pageTitle, string $activeMenu 
                 $menus = [
                     'dashboard' => ['Dashboard', 'dashboard.php'],
                     'issue' => ['Terbitkan Dokumen', 'issue.php'],
-                    'brands' => ['Brand Penerbit', 'brands.php'],
-                    'settings' => ['Pengaturan', 'settings.php'],
+                    'password' => ['Ubah Password', 'change_password.php'],
                 ];
+
+                if (currentUserRole() === 'superadmin') {
+                    $menus = [
+                        'dashboard' => ['Dashboard', 'dashboard.php'],
+                        'issue' => ['Terbitkan Dokumen', 'issue.php'],
+                        'brands' => ['Brand Penerbit', 'brands.php'],
+                        'registrations' => ['Registrasi', 'registrations.php'],
+                        'settings' => ['Pengaturan', 'settings.php'],
+                        'password' => ['Ubah Password', 'change_password.php'],
+                    ];
+                }
                 foreach ($menus as $key => [$label, $href]) :
                     $isActive = $activeMenu === $key;
                     ?>

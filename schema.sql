@@ -7,8 +7,15 @@ SET time_zone = "+00:00";
 CREATE TABLE IF NOT EXISTS admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(150) NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     nama_lengkap VARCHAR(100) NOT NULL,
+    status ENUM('pending','approved','rejected','inactive') NOT NULL DEFAULT 'approved',
+    role ENUM('superadmin','admin','user') NOT NULL DEFAULT 'user',
+    organisasi VARCHAR(150) NULL,
+    alasan_daftar TEXT NULL,
+    disetujui_oleh INT NULL,
+    disetujui_pada DATETIME NULL,
     dibuat_pada DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -30,6 +37,7 @@ CREATE TABLE IF NOT EXISTS documents (
     alasan_revoke TEXT NULL,
     direvoke_pada DATETIME NULL,
     diterbitkan_oleh INT NOT NULL,
+    pemilik_id INT NULL,
     dibuat_pada DATETIME DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_documents_admin
         FOREIGN KEY (diterbitkan_oleh) REFERENCES admins(id)
@@ -39,6 +47,7 @@ CREATE TABLE IF NOT EXISTS documents (
     INDEX idx_status (status),
     INDEX idx_brand (brand_penerbit),
     INDEX idx_brand_id (brand_id),
+    INDEX idx_pemilik_id (pemilik_id),
     INDEX idx_dibuat_pada (dibuat_pada),
     INDEX idx_nomor_surat (nomor_surat)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin', 'admin']);
 
 $id = (int) ($_GET['id'] ?? 0);
 
@@ -57,20 +58,13 @@ renderAdminLayoutStart($pdo, 'Dokumen Berhasil Diterbitkan', 'issue', '<a href="
     <a href="dashboard.php" class="rounded-lg border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Kembali ke Dashboard</a>
 </div>
 
-<canvas id="stamp-canvas" width="640" height="960" style="display:none;"></canvas>
+<canvas id="qr-download-canvas" width="408" height="442" style="display:none;"></canvas>
 
 <script src="<?php echo e($basePath); ?>assets/js/qrcode.min.js"></script>
 <script>
 (function () {
     var url = <?php echo json_encode($urlVerifikasi, JSON_UNESCAPED_SLASHES); ?>;
     var kode = <?php echo json_encode($dokumen['kode_unik']); ?>;
-    var namaDokumen = <?php echo json_encode($dokumen['nama_dokumen']); ?>;
-    var namaPenerima = <?php echo json_encode($dokumen['nama_penerima']); ?>;
-    var nomorSurat = <?php echo json_encode($dokumen['nomor_surat'] ?? ''); ?>;
-    var namaPenandatangan = <?php echo json_encode($dokumen['nama_penandatangan']); ?>;
-    var jabatanPenandatangan = <?php echo json_encode($dokumen['jabatan_penandatangan']); ?>;
-    var tanggalTerbit = <?php echo json_encode(formatTanggalIndonesia($dokumen['tanggal_terbit'])); ?>;
-    var namaPerusahaan = <?php echo json_encode($settings['nama_perusahaan']); ?>;
     var warnaAksen = <?php echo json_encode($settings['warna_aksen']); ?>;
     var logoUrl = <?php echo json_encode(!empty($settings['logo_path']) ? $basePath . $settings['logo_path'] : ''); ?>;
 
@@ -89,11 +83,11 @@ renderAdminLayoutStart($pdo, 'Dokumen Berhasil Diterbitkan', 'issue', '<a href="
 
     document.getElementById('btn-download').addEventListener('click', function () {
         if (logoImg && !logoImg.complete) {
-            logoImg.onload = gambarStempel;
-            logoImg.onerror = function () { logoImg = null; gambarStempel(); };
+            logoImg.onload = function () { gambarQrPreview(); downloadQrCodeOnly(); };
+            logoImg.onerror = function () { logoImg = null; downloadQrCodeOnly(); };
             return;
         }
-        gambarStempel();
+        downloadQrCodeOnly();
     });
 
     function gambarQrPreview() {
@@ -165,68 +159,33 @@ renderAdminLayoutStart($pdo, 'Dokumen Berhasil Diterbitkan', 'issue', '<a href="
         ctx.restore();
     }
 
-    function gambarStempel() {
-        var canvas = document.getElementById('stamp-canvas');
+    function downloadQrCodeOnly() {
+        var canvas = document.getElementById('qr-download-canvas');
         var ctx = canvas.getContext('2d');
-        var W = canvas.width, H = canvas.height;
+        var qrSize = 360;
+        var padding = 24;
+        var codeGap = 14;
+        var codeFontSize = 9;
+        var codeLineHeight = 12;
+        var W = qrSize + padding * 2;
+        var H = qrSize + padding * 2 + codeGap + codeLineHeight;
+
+        canvas.width = W;
+        canvas.height = H;
 
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, W, H);
 
-        ctx.strokeStyle = warnaAksen;
-        ctx.lineWidth = 6;
-        ctx.strokeRect(12, 12, W - 24, H - 24);
+        drawQrWithLogo(ctx, padding, padding, qrSize, logoImg);
 
-        ctx.fillStyle = warnaAksen;
+        ctx.fillStyle = '#111827';
+        ctx.font = codeFontSize + 'px monospace';
         ctx.textAlign = 'center';
-
-        if (logoImg) {
-            var logoH = 60;
-            var logoW = Math.min(260, logoImg.width * (logoH / logoImg.height));
-            ctx.drawImage(logoImg, (W - logoW) / 2, 20, logoW, logoH);
-        } else {
-            ctx.font = 'bold 28px sans-serif';
-            ctx.fillText(namaPerusahaan, W / 2, 70);
-        }
-
-        ctx.font = 'bold 32px monospace';
-        ctx.fillText(kode, W / 2, 120);
-
-        var qrSize = 380;
-        var qrX = (W - qrSize) / 2;
-        var qrY = 150;
-        drawQrWithLogo(ctx, qrX, qrY, qrSize, logoImg);
-
-        var textY = qrY + qrSize + 50;
-        ctx.font = '18px sans-serif';
-        ctx.fillStyle = '#333333';
-
-        function wrapAndDraw(label, value, y) {
-            ctx.font = 'bold 16px sans-serif';
-            ctx.fillStyle = '#666666';
-            ctx.fillText(label, W / 2, y);
-            ctx.font = '20px sans-serif';
-            ctx.fillStyle = '#111111';
-            ctx.fillText(value, W / 2, y + 26);
-        }
-
-        wrapAndDraw('NAMA DOKUMEN', namaDokumen, textY);
-        wrapAndDraw('PENERIMA', namaPenerima, textY + 70);
-        var barisBerikut = textY + 140;
-        if (nomorSurat) {
-            wrapAndDraw('NOMOR SURAT', nomorSurat, barisBerikut);
-            barisBerikut += 70;
-        }
-        wrapAndDraw('TANGGAL TERBIT', tanggalTerbit, barisBerikut);
-        barisBerikut += 70;
-        wrapAndDraw('DITANDATANGANI OLEH', namaPenandatangan + ' (' + jabatanPenandatangan + ')', barisBerikut);
-
-        ctx.font = '14px sans-serif';
-        ctx.fillStyle = '#888888';
-        ctx.fillText(url, W / 2, H - 30);
+        ctx.textBaseline = 'top';
+        ctx.fillText(kode, W / 2, padding + qrSize + codeGap);
 
         var link = document.createElement('a');
-        link.download = 'stempel-' + kode + '.png';
+        link.download = 'qrcode-' + kode + '.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     }

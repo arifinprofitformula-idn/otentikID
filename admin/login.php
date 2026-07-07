@@ -21,22 +21,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = (string) ($_POST['password'] ?? '');
 
     if ($username === '' || $password === '') {
-        $pesanError = 'Username dan password wajib diisi.';
+        $pesanError = 'Username/email dan password wajib diisi.';
     } else {
-        $stmt = $pdo->prepare('SELECT id, username, password_hash, nama_lengkap FROM admins WHERE username = :username');
-        $stmt->execute(['username' => $username]);
+        $stmt = $pdo->prepare(
+            'SELECT id, username, email, password_hash, nama_lengkap, status, role
+             FROM admins
+             WHERE username = :identifier_username OR email = :identifier_email
+             LIMIT 1'
+        );
+        $stmt->execute([
+            'identifier_username' => $username,
+            'identifier_email' => $username,
+        ]);
         $admin = $stmt->fetch();
 
-        if ($admin && password_verify($password, $admin['password_hash'])) {
+        if ($admin && $admin['status'] === 'approved' && password_verify($password, $admin['password_hash'])) {
             session_regenerate_id(true);
             $_SESSION['admin_id'] = (int) $admin['id'];
             $_SESSION['admin_nama'] = $admin['nama_lengkap'];
+            $_SESSION['admin_role'] = $admin['role'];
 
-            header('Location: dashboard.php');
+            header('Location: ' . dashboardPathForRole($admin['role']));
             exit;
         }
 
-        $pesanError = 'Username atau password salah.';
+        $pesanError = 'Username atau password salah, atau akun belum aktif.';
     }
 }
 
@@ -140,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <form method="post" class="space-y-5" novalidate>
                         <div>
-                            <label for="username" class="mb-2 block text-sm font-semibold text-slate-700">Username</label>
+                            <label for="username" class="mb-2 block text-sm font-semibold text-slate-700">Username atau Email</label>
                             <div class="relative">
                                 <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
                                     <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -156,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     required
                                     autofocus
                                     class="theme-focus block w-full rounded-md border border-slate-200 bg-white py-3 pl-12 pr-4 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400"
-                                    placeholder="Masukkan username"
+                                    placeholder="Masukkan username atau email"
                                 >
                             </div>
                         </div>

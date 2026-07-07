@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin']);
 
 $uploadDir = __DIR__ . '/../uploads/branding';
 $ekstensiDiizinkan = [
@@ -183,6 +184,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $basePath = '../';
 renderAdminLayoutStart($pdo, 'Pengaturan Branding', 'settings', '<a href="dashboard.php" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Kembali ke Dashboard</a>');
 ?>
+
+<div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+    <a href="change_password.php" class="theme-surface border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5">
+        <p class="text-sm font-bold uppercase tracking-wide text-slate-500">Keamanan Akun</p>
+        <h3 class="mt-2 text-lg font-bold text-slate-900">Ubah Password</h3>
+        <p class="mt-1 text-sm text-slate-500">Perbarui password admin yang sedang login.</p>
+    </a>
+    <a href="registrations.php" class="theme-surface border border-slate-200 bg-white p-5 transition hover:-translate-y-0.5">
+        <p class="text-sm font-bold uppercase tracking-wide text-slate-500">Registrasi</p>
+        <h3 class="mt-2 text-lg font-bold text-slate-900">Approval Akun Baru</h3>
+        <p class="mt-1 text-sm text-slate-500">Tinjau dan setujui akun yang mendaftar.</p>
+    </a>
+</div>
 
 <div class="theme-surface border border-slate-200 bg-white p-6">
     <?php if ($sukses) : ?>

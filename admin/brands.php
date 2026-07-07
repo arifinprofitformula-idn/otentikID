@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin']);
 
 $errors = [];
 $sukses = '';

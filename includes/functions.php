@@ -45,8 +45,38 @@ function requireLogin(): void
         return;
     }
 
-    header('Location: login.php');
+    $scriptName = (string) ($_SERVER['SCRIPT_NAME'] ?? '');
+    $loginPath = str_contains($scriptName, '/user/') ? '../admin/login.php' : 'login.php';
+
+    header('Location: ' . $loginPath);
     exit;
+}
+
+function currentUserRole(): string
+{
+    return (string) ($_SESSION['admin_role'] ?? '');
+}
+
+function isRole(array $roles): bool
+{
+    return isLoggedIn() && in_array(currentUserRole(), $roles, true);
+}
+
+function requireRole(array $roles): void
+{
+    requireLogin();
+
+    if (isRole($roles)) {
+        return;
+    }
+
+    http_response_code(403);
+    exit('Akses ditolak.');
+}
+
+function dashboardPathForRole(string $role): string
+{
+    return $role === 'user' ? '../user/dashboard.php' : 'dashboard.php';
 }
 
 function sanitizeInput(?string $str): string
@@ -222,6 +252,31 @@ function getBrandById(PDO $pdo, int $brandId, bool $hanyaAktif = false): ?array
     $brand = $stmt->fetch();
 
     return $brand ?: null;
+}
+
+function passwordKuat(string $password): bool
+{
+    return strlen($password) >= 10
+        && preg_match('/[a-z]/', $password) === 1
+        && preg_match('/[A-Z]/', $password) === 1
+        && preg_match('/[0-9]/', $password) === 1;
+}
+
+function auditLog(PDO $pdo, ?int $adminId, string $aksi, string $detail = ''): void
+{
+    try {
+        $stmt = $pdo->prepare(
+            'INSERT INTO audit_logs (admin_id, aksi, detail)
+             VALUES (:admin_id, :aksi, :detail)'
+        );
+        $stmt->execute([
+            'admin_id' => $adminId,
+            'aksi' => $aksi,
+            'detail' => $detail !== '' ? $detail : null,
+        ]);
+    } catch (Throwable $e) {
+        error_log('Gagal menulis audit log: ' . $e->getMessage());
+    }
 }
 
 function warnaLebihGelap(string $hex, float $persen = 0.15): string

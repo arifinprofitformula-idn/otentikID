@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin', 'admin']);
 
 $brandList = getBrands($pdo, false);
 
@@ -54,8 +55,10 @@ renderAdminLayoutStart(
     $pdo,
     'Dashboard',
     'dashboard',
-    '<a href="settings.php" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 md:hidden">Pengaturan</a>
-     <a href="issue.php" class="theme-button rounded-lg px-4 py-2.5 text-sm font-bold shadow-sm transition">+ Terbitkan Dokumen Baru</a>'
+    (currentUserRole() === 'superadmin'
+        ? '<a href="settings.php" class="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 md:hidden">Pengaturan</a> '
+        : '')
+    . '<a href="issue.php" class="theme-button rounded-lg px-4 py-2.5 text-sm font-bold shadow-sm transition">+ Terbitkan Dokumen Baru</a>'
 );
 ?>
 

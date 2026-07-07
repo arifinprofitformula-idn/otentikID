@@ -28,14 +28,26 @@ if (!$sudahAdaAdmin && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $pesanError = 'Password minimal 8 karakter.';
     } else {
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $pdo->prepare(
-            'INSERT INTO admins (username, password_hash, nama_lengkap) VALUES (:username, :password_hash, :nama_lengkap)'
-        );
-        $stmt->execute([
-            'username' => $username,
-            'password_hash' => $hash,
-            'nama_lengkap' => $namaLengkap,
-        ]);
+        try {
+            $stmt = $pdo->prepare(
+                'INSERT INTO admins (username, password_hash, nama_lengkap, status, role, disetujui_pada)
+                 VALUES (:username, :password_hash, :nama_lengkap, "approved", "superadmin", NOW())'
+            );
+            $stmt->execute([
+                'username' => $username,
+                'password_hash' => $hash,
+                'nama_lengkap' => $namaLengkap,
+            ]);
+        } catch (PDOException $e) {
+            $stmt = $pdo->prepare(
+                'INSERT INTO admins (username, password_hash, nama_lengkap) VALUES (:username, :password_hash, :nama_lengkap)'
+            );
+            $stmt->execute([
+                'username' => $username,
+                'password_hash' => $hash,
+                'nama_lengkap' => $namaLengkap,
+            ]);
+        }
 
         $pesanSukses = 'Admin pertama berhasil dibuat. Silakan login melalui admin/login.php, lalu hapus create_admin.php dari server produksi.';
         $sudahAdaAdmin = true;

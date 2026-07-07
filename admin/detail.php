@@ -3,13 +3,15 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin', 'admin']);
 
 $id = (int) ($_GET['id'] ?? 0);
 
 $stmt = $pdo->prepare(
-    'SELECT d.*, a.nama_lengkap AS diterbitkan_oleh_nama
+    'SELECT d.*, a.nama_lengkap AS diterbitkan_oleh_nama, p.nama_lengkap AS pemilik_nama, p.username AS pemilik_username
      FROM documents d
      LEFT JOIN admins a ON a.id = d.diterbitkan_oleh
+     LEFT JOIN admins p ON p.id = d.pemilik_id
      WHERE d.id = :id'
 );
 $stmt->execute(['id' => $id]);
@@ -74,6 +76,7 @@ renderAdminLayoutStart($pdo, 'Detail Dokumen', 'dashboard', '<a href="dashboard.
             'Catatan' => $dokumen['catatan'] !== null && $dokumen['catatan'] !== '' ? nl2br(e($dokumen['catatan'])) : '-',
             'Hash Dokumen' => '<code class="break-all rounded bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">' . e($dokumen['hash_dokumen']) . '</code>',
             'Diterbitkan Oleh' => e($dokumen['diterbitkan_oleh_nama'] ?? '-'),
+            'Pemilik Dokumen' => !empty($dokumen['pemilik_nama']) ? e($dokumen['pemilik_nama']) . ' (@' . e($dokumen['pemilik_username']) . ')' : '-',
             'Dibuat Pada' => formatTanggalWaktuIndonesia($dokumen['dibuat_pada']),
         ];
         foreach ($details as $label => $value) :

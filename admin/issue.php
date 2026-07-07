@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 require __DIR__ . '/auth_check.php';
 require __DIR__ . '/../includes/admin_layout.php';
+requireRole(['superadmin', 'admin']);
 
 $brandList = getBrands($pdo, true);
+$stmtPemilik = $pdo->query("SELECT id, nama_lengkap, username, email, role FROM admins WHERE status = 'approved' ORDER BY nama_lengkap ASC");
+$pemilikList = $stmtPemilik->fetchAll();
 
 $errors = [];
 $form = [
@@ -12,6 +15,7 @@ $form = [
     'jenis_dokumen' => '',
     'brand_id' => '',
     'nama_penerima' => '',
+    'pemilik_id' => (string) ($_SESSION['admin_id'] ?? ''),
     'nomor_surat' => '',
     'nama_penandatangan' => '',
     'jabatan_penandatangan' => '',
@@ -36,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form['jenis_dokumen'] = trim((string) ($_POST['jenis_dokumen'] ?? ''));
     $form['brand_id'] = trim((string) ($_POST['brand_id'] ?? ''));
     $form['nama_penerima'] = trim((string) ($_POST['nama_penerima'] ?? ''));
+    $form['pemilik_id'] = trim((string) ($_POST['pemilik_id'] ?? ''));
     $form['nomor_surat'] = trim((string) ($_POST['nomor_surat'] ?? ''));
     $form['nama_penandatangan'] = trim((string) ($_POST['nama_penandatangan'] ?? ''));
     $form['jabatan_penandatangan'] = trim((string) ($_POST['jabatan_penandatangan'] ?? ''));
@@ -54,6 +59,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if ($form['nama_penerima'] === '') {
         $errors[] = 'Nama penerima wajib diisi.';
+    }
+    $pemilikTerpilih = null;
+    foreach ($pemilikList as $pemilik) {
+        if ((int) $pemilik['id'] === (int) $form['pemilik_id']) {
+            $pemilikTerpilih = $pemilik;
+            break;
+        }
+    }
+    if (!$pemilikTerpilih) {
+        $errors[] = 'Pemilik dokumen tidak valid.';
     }
     if ($form['nama_penandatangan'] === '') {
         $errors[] = 'Nama penandatangan wajib diisi.';
@@ -81,9 +96,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt = $pdo->prepare(
             'INSERT INTO documents
-                (kode_unik, nama_dokumen, jenis_dokumen, brand_penerbit, brand_id, nama_penerima, nomor_surat, nama_penandatangan, jabatan_penandatangan, catatan, tanggal_terbit, hash_dokumen, diterbitkan_oleh)
+                (kode_unik, nama_dokumen, jenis_dokumen, brand_penerbit, brand_id, nama_penerima, nomor_surat, nama_penandatangan, jabatan_penandatangan, catatan, tanggal_terbit, hash_dokumen, diterbitkan_oleh, pemilik_id)
              VALUES
-                (:kode_unik, :nama_dokumen, :jenis_dokumen, :brand_penerbit, :brand_id, :nama_penerima, :nomor_surat, :nama_penandatangan, :jabatan_penandatangan, :catatan, :tanggal_terbit, :hash_dokumen, :diterbitkan_oleh)'
+                (:kode_unik, :nama_dokumen, :jenis_dokumen, :brand_penerbit, :brand_id, :nama_penerima, :nomor_surat, :nama_penandatangan, :jabatan_penandatangan, :catatan, :tanggal_terbit, :hash_dokumen, :diterbitkan_oleh, :pemilik_id)'
         );
         $stmt->execute([
             'kode_unik' => $kodeUnik,
@@ -99,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'tanggal_terbit' => $form['tanggal_terbit'],
             'hash_dokumen' => $hashDokumen,
             'diterbitkan_oleh' => (int) $_SESSION['admin_id'],
+            'pemilik_id' => (int) $pemilikTerpilih['id'],
         ]);
 
         header('Location: issue_success.php?id=' . $pdo->lastInsertId());
@@ -144,6 +160,16 @@ renderAdminLayoutStart($pdo, 'Terbitkan Dokumen Baru', 'issue', '<a href="dashbo
         <div>
             <label for="nama_penerima" class="mb-2 block text-sm font-semibold text-slate-700">Nama Penerima</label>
             <input class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none transition theme-focus" type="text" id="nama_penerima" name="nama_penerima" value="<?php echo e($form['nama_penerima']); ?>" required>
+        </div>
+        <div>
+            <label for="pemilik_id" class="mb-2 block text-sm font-semibold text-slate-700">Pemilik Akun Dokumen</label>
+            <select class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none transition theme-focus" id="pemilik_id" name="pemilik_id" required>
+                <?php foreach ($pemilikList as $pemilik) : ?>
+                    <option value="<?php echo (int) $pemilik['id']; ?>" <?php echo (string) $form['pemilik_id'] === (string) $pemilik['id'] ? 'selected' : ''; ?>>
+                        <?php echo e($pemilik['nama_lengkap']); ?> (@<?php echo e($pemilik['username']); ?> - <?php echo e($pemilik['role']); ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div>
             <label for="nomor_surat" class="mb-2 block text-sm font-semibold text-slate-700">Nomor Surat (opsional)</label>
