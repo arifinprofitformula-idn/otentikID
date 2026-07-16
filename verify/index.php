@@ -35,7 +35,7 @@ if ($kode !== '') {
 }
 
 $logoPath = !empty($settings['logo_path']) ? '../' . $settings['logo_path'] : '';
-$namaPerusahaan = $settings['nama_perusahaan'] ?: 'EPI Sistem Otentik ID';
+$namaPerusahaan = $settings['nama_perusahaan'] ?: 'Sistem Otentik ID';
 $tagline = $settings['tagline'] ?: 'Validasi & Verifikasi Keabsahan Dokumen';
 $warnaGelap = isValidHexColor($settings['warna_sidebar'] ?? null) ? $settings['warna_sidebar'] : '#0f172a';
 $warnaAksen = isValidHexColor($settings['warna_tombol'] ?? null) ? $settings['warna_tombol'] : '#d4af37';
@@ -62,10 +62,10 @@ $warnaAksen = isValidHexColor($settings['warna_tombol'] ?? null) ? $settings['wa
                     <img src="<?php echo e($logoPath); ?>" alt="<?php echo e($namaPerusahaan); ?>" class="mx-auto mb-3 max-h-14 max-w-[220px] object-contain">
                 <?php else : ?>
                     <div class="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-sm font-black tracking-[0.18em] text-yellow-400 shadow-lg">
-                        EPI
+                        OT
                     </div>
                 <?php endif; ?>
-                <p class="text-sm font-bold uppercase tracking-[0.22em] text-white">EPI Sistem Otentik ID</p>
+                <p class="text-sm font-bold uppercase tracking-[0.22em] text-white">Sistem Otentik ID</p>
                 <p class="mt-1 text-sm text-white/70"><?php echo e($tagline); ?></p>
             </div>
 
@@ -89,7 +89,7 @@ $warnaAksen = isValidHexColor($settings['warna_tombol'] ?? null) ? $settings['wa
                                 type="text"
                                 id="kode"
                                 name="kode"
-                                placeholder="EPI-2026-XXXXXX"
+                                placeholder="BA-2026-XXXXXX"
                                 required
                                 autofocus
                                 autocapitalize="characters"

@@ -154,7 +154,7 @@ renderAdminLayoutStart($pdo, 'Dokumen Berhasil Diterbitkan', 'issue', '<a href="
             ctx.font = 'bold ' + Math.floor(badgeSize * 0.28) + 'px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('EPI', badgeX + badgeSize / 2, badgeY + badgeSize / 2);
+            ctx.fillText('OT', badgeX + badgeSize / 2, badgeY + badgeSize / 2);
         }
         ctx.restore();
     }

@@ -316,7 +316,7 @@ renderAdminLayoutStart($pdo, 'Pengaturan Branding', 'settings', '<a href="dashbo
         <div class="lg:col-span-2">
             <div class="grid grid-cols-1 gap-4 rounded-xl border border-slate-200 bg-slate-50 p-4 md:grid-cols-3">
                 <div class="rounded-xl p-4 text-white" id="preview-sidebar" style="background: <?php echo e($settings['warna_sidebar']); ?>;">
-                    <p class="text-sm font-bold" id="preview-logo" style="color: <?php echo e($settings['warna_tombol']); ?>;">EPI Sistem Otentik ID</p>
+                    <p class="text-sm font-bold" id="preview-logo" style="color: <?php echo e($settings['warna_tombol']); ?>;">Sistem Otentik ID</p>
                     <p class="mt-3 rounded-lg px-3 py-2 text-sm" style="background: rgba(255,255,255,.12);">Dashboard</p>
                 </div>
                 <div class="rounded-xl border border-slate-200 p-4" id="preview-bg" style="background: <?php echo e($settings['warna_background']); ?>;">

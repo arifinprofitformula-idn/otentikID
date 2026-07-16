@@ -44,7 +44,7 @@ function renderAdminLayoutStart(PDO $pdo, string $pageTitle, string $activeMenu 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title><?php echo e($pageTitle); ?> - EPI Sistem Otentik ID</title>
+    <title><?php echo e($pageTitle); ?> - Sistem Otentik ID</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -115,7 +115,7 @@ function renderAdminLayoutStart(PDO $pdo, string $pageTitle, string $activeMenu 
                     >
                 <?php else : ?>
                     <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl border border-white/15 bg-white/10">
-                        <span class="text-lg font-black tracking-[0.18em]" style="color: var(--theme-button);">EPI</span>
+                        <span class="text-lg font-black tracking-[0.18em]" style="color: var(--theme-button);">OT</span>
                     </div>
                 <?php endif; ?>
                 <h1 class="text-xl font-bold leading-tight text-white"><?php echo e($settings['nama_perusahaan']); ?></h1>
@@ -161,7 +161,7 @@ function renderAdminLayoutStart(PDO $pdo, string $pageTitle, string $activeMenu 
             <header class="sticky top-0 z-20 border-b border-slate-200" style="background: var(--theme-topbar);">
                 <div class="flex flex-col gap-4 px-5 py-5 sm:flex-row sm:items-center sm:justify-between lg:px-8">
                     <div>
-                        <p class="text-xs font-semibold uppercase tracking-[0.22em] md:hidden" style="color: var(--theme-button);">EPI Sistem Otentik ID</p>
+                        <p class="text-xs font-semibold uppercase tracking-[0.22em] md:hidden" style="color: var(--theme-button);">Sistem Otentik ID</p>
                         <h2 class="text-2xl font-bold tracking-tight text-slate-900"><?php echo e($pageTitle); ?></h2>
                     </div>
                     <?php if ($actionsHtml !== '') : ?>

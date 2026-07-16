@@ -6,7 +6,7 @@ require __DIR__ . '/../includes/functions.php';
 
 $settings = getSettings($pdo);
 $logoPath = !empty($settings['logo_path']) ? '../' . $settings['logo_path'] : '';
-$namaPerusahaan = $settings['nama_perusahaan'] ?: 'EPI Sistem Otentik ID';
+$namaPerusahaan = $settings['nama_perusahaan'] ?: 'Sistem Otentik ID';
 $tagline = $settings['tagline'] ?: 'Validasi & Verifikasi Keabsahan Dokumen';
 
 if (isLoggedIn()) {
@@ -106,7 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <img src="<?php echo e($logoPath); ?>" alt="<?php echo e($namaPerusahaan); ?>" class="mx-auto mb-8 max-h-28 max-w-xs object-contain drop-shadow-2xl">
                 <?php else : ?>
                     <div class="mx-auto mb-8 flex h-20 w-20 items-center justify-center rounded-2xl border border-white/20 bg-white/10 shadow-2xl backdrop-blur">
-                        <span class="text-2xl font-black tracking-[0.18em]" style="color: var(--theme-button);">EPI</span>
+                        <span class="text-2xl font-black tracking-[0.18em]" style="color: var(--theme-button);">OT</span>
                     </div>
                 <?php endif; ?>
                 <h1 class="text-4xl font-black leading-tight tracking-tight text-white xl:text-5xl">
@@ -126,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <img src="<?php echo e($logoPath); ?>" alt="<?php echo e($namaPerusahaan); ?>" class="mb-4 max-h-14 max-w-[180px] object-contain">
                         <?php else : ?>
                             <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#07111f] shadow-lg">
-                                <span class="text-base font-black tracking-[0.16em]" style="color: var(--theme-button);">EPI</span>
+                                <span class="text-base font-black tracking-[0.16em]" style="color: var(--theme-button);">OT</span>
                             </div>
                         <?php endif; ?>
                         <p class="text-base font-bold text-slate-900"><?php echo e($namaPerusahaan); ?></p>

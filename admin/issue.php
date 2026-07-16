@@ -173,7 +173,7 @@ renderAdminLayoutStart($pdo, 'Terbitkan Dokumen Baru', 'issue', '<a href="dashbo
         </div>
         <div>
             <label for="nomor_surat" class="mb-2 block text-sm font-semibold text-slate-700">Nomor Surat (opsional)</label>
-            <input class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none transition theme-focus" type="text" id="nomor_surat" name="nomor_surat" value="<?php echo e($form['nomor_surat']); ?>" placeholder="Contoh: 012/EPI/VII/2026">
+            <input class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none transition theme-focus" type="text" id="nomor_surat" name="nomor_surat" value="<?php echo e($form['nomor_surat']); ?>" placeholder="Contoh: 012/OT/VII/2026">
         </div>
         <div>
             <label for="nama_penandatangan" class="mb-2 block text-sm font-semibold text-slate-700">Nama Penandatangan</label>

@@ -1,8 +1,17 @@
+# Konfigurasi sensitif
 config.php
-/uploads/stempel/*
-/uploads/branding/*
-!.gitkeep
-*.log
+
+# Session files
+storage/sessions/*
+
+# Uploaded files (kecuali .gitkeep)
+uploads/branding/*
+!uploads/branding/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS
 .DS_Store
-/storage/sessions/*
-!/storage/sessions/.gitkeep
+Thumbs.db

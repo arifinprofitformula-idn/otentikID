@@ -15,7 +15,7 @@ function generateKodeUnik(PDO $pdo): string
             $acak .= $karakter[ord($bytes[$i]) % $panjangKarakter];
         }
 
-        $kode = 'EPI-' . $tahun . '-' . $acak;
+        $kode = 'BA-' . $tahun . '-' . $acak;
         $stmt = $pdo->prepare('SELECT COUNT(*) FROM documents WHERE kode_unik = :kode_unik');
         $stmt->execute(['kode_unik' => $kode]);
 
@@ -87,6 +87,38 @@ function sanitizeInput(?string $str): string
 function e(?string $value): string
 {
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
+}
+
+// === CSRF PROTECTION ===
+
+/**
+ * Return current CSRF token value (for meta tags / JS usage)
+ */
+function csrfToken(): string
+{
+    return $_SESSION['csrf_token'] ?? '';
+}
+
+/**
+ * Return hidden input field with CSRF token
+ */
+function csrfField(): string
+{
+    return '<input type="hidden" name="_csrf_token" value="' . e(csrfToken()) . '">';
+}
+
+/**
+ * Validate CSRF token from POST request — call at top of POST handlers
+ */
+function csrfCheck(): void
+{
+    $token = (string) ($_POST['_csrf_token'] ?? '');
+    $sessionToken = (string) ($_SESSION['csrf_token'] ?? '');
+
+    if ($token === '' || $sessionToken === '' || !hash_equals($sessionToken, $token)) {
+        http_response_code(403);
+        exit('Permintaan ditolak: token keamanan tidak valid.');
+    }
 }
 
 function formatTanggalIndonesia(?string $tanggal): string
